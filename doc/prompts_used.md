@@ -25,11 +25,14 @@ add to the python script a web user interface using streamlit framewok
 
 the user interface asks for the input file but it does not allow to input the output file
 
-
 --
-
 
 change the title Student Data Processor to IntedashBoard file exporter
 
-
 An error occurred: NDFrame.to_excel() missing 1 required positional argument: 'excel_writer
+
+
+
+put classes code in separate files
+
+[process_excel.py]():162-185
