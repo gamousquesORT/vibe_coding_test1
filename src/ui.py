@@ -33,9 +33,9 @@ class StreamlitUI:
         st.write("This app processes Excel files containing student information.")
 
     @staticmethod
-    def render_input_fields() -> Tuple[Optional[str], str]:
-        """Renders input fields for section and filename."""
-        col1, col2 = st.columns(2)
+    def render_input_fields() -> Tuple[Optional[str], str, int]:
+        """Renders input fields for section, filename, and number of teams."""
+        col1, col2, col3 = st.columns(3)
         with col1:
             section = st.text_input("Enter the section:", "")
             # Validate section input
@@ -47,14 +47,44 @@ class StreamlitUI:
                 "Enter output filename:", 
                 CONFIG['DEFAULT_FILENAME']
             )
+        with col3:
+            num_teams = st.number_input(
+                "Number of Teams:",
+                min_value=1,
+                value=1,
+                step=1
+            )
         
         if not output_filename.endswith('.xlsx'):
             output_filename += '.xlsx'
             
-        return section, output_filename
+        return section, output_filename, num_teams
 
     @staticmethod
-    def render_student_selection(df: pd.DataFrame) -> Dict[int, int]:
+    def display_team_summary(team_assignments: Dict[int, int], num_teams: int):
+        """Displays a summary of how many students are in each team."""
+        # Count students in each team
+        team_counts = {i: 0 for i in range(1, num_teams + 1)}
+        for team_num in team_assignments.values():
+            if team_num in team_counts:
+                team_counts[team_num] += 1
+        
+        # Display summary in a neat format
+        st.write("---")
+        st.write("**Team Summary:**")
+        
+        # Create rows of 4 teams each for better layout
+        teams_per_row = 4
+        for i in range(0, num_teams, teams_per_row):
+            cols = st.columns(teams_per_row)
+            for j in range(teams_per_row):
+                team_num = i + j + 1
+                if team_num <= num_teams:
+                    with cols[j]:
+                        st.markdown(f"Team {team_num}: **{team_counts[team_num]}** students")
+
+    @staticmethod
+    def render_student_selection(df: pd.DataFrame, num_teams: int) -> Dict[int, int]:
         """
         Renders the student selection interface with team assignment in a table format.
         Returns a dictionary mapping row indices to team numbers.
@@ -70,7 +100,7 @@ class StreamlitUI:
         with col1:
             st.markdown("**Student Name**")
         with col2:
-            st.markdown("**Team**")
+            st.markdown(f"**Team (1-{num_teams})**")
         
         # Display each student with their current information and team input
         team_assignments = {}
@@ -95,16 +125,23 @@ class StreamlitUI:
                 # Convert input to number and validate
                 try:
                     team_num = int(team_str) if team_str.strip() else 0
-                    if team_num < 0:
+                    # Validate team number is within range
+                    if team_num < 0 or team_num > num_teams:
+                        st.error(f"Team number must be between 1 and {num_teams}")
                         team_num = 0
                 except ValueError:
                     team_num = 0
+                    if team_str.strip():  # Only show error if something was entered
+                        st.error("Please enter a valid number")
                     
                 if team_num > 0:
                     team_assignments[idx] = team_num
                     st.session_state.team_assignments[idx] = team_num
                 elif idx in st.session_state.team_assignments:
                     del st.session_state.team_assignments[idx]
+
+        # Display team summary after all inputs
+        StreamlitUI.display_team_summary(team_assignments, num_teams)
             
         return team_assignments
 

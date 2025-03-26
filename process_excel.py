@@ -19,15 +19,22 @@ def main():
                 df = pd.read_excel(uploaded_file)
                 initial_df = ExcelProcessor.process_dataframe(df, "", {})
                 
-                # Get input fields
-                section, output_filename = StreamlitUI.render_input_fields()
+                # Get input fields including number of teams
+                section, output_filename, num_teams = StreamlitUI.render_input_fields()
                 
-                # Show student selection and team assignment interface
-                team_assignments = StreamlitUI.render_student_selection(initial_df)
+                # Show student selection and team assignment interface with validation
+                team_assignments = StreamlitUI.render_student_selection(initial_df, num_teams)
                 
                 if st.button("Process File"):
                     if section is None:
                         st.error("Please enter a valid section before processing the file.")
+                        return
+                    
+                    # Validate all team assignments are within range
+                    invalid_teams = [team for team in team_assignments.values() 
+                                   if team < 1 or team > num_teams]
+                    if invalid_teams:
+                        st.error(f"All team numbers must be between 1 and {num_teams}")
                         return
                         
                     try:

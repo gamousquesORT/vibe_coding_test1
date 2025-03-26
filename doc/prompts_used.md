@@ -31,11 +31,13 @@ change the title Student Data Processor to IntedashBoard file exporter
 
 An error occurred: NDFrame.to_excel() missing 1 required positional argument: 'excel_writer
 
-
-
 put classes code in separate files
 
 [process_excel.py]():162-185
 
+do not display thelabel Tem fo `<student>` on each row. make the input more like a table. student and team input filed on the same row
 
-do not disply rhe label Tem fo >student> on each row. make the input more like a table. student and team input filed on the same rown
+
+--
+
+add a sumary fields to show how many students are in aevery team while the user inputs the team numbers
