@@ -37,7 +37,20 @@ put classes code in separate files
 
 do not display thelabel Tem fo `<student>` on each row. make the input more like a table. student and team input filed on the same row
 
-
 --
 
 add a sumary fields to show how many students are in aevery team while the user inputs the team numbers
+
+---
+
+before the user selects to process file check that all students have a team assigned and warn the user, dont block him
+
+
+--
+
+
+there is a empty squared draw undher the labes studnt name and Team and befor the student list. remove it
+
+Pasted Image
+
+[config.py]():1-24

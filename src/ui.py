@@ -11,6 +11,82 @@ class StreamlitUI:
     @staticmethod
     def render_header():
         """Renders the application header with logout button."""
+        # Add custom CSS for improved styling
+        st.markdown("""
+            <style>
+                /* Main title styling */
+                .main-title {
+                    color: #1E88E5;
+                    font-size: 2.5rem;
+                    font-weight: 600;
+                    margin-bottom: 1rem;
+                    padding: 1rem 0;
+                    border-bottom: 2px solid #1E88E5;
+                }
+                
+                /* Section headers */
+                .section-header {
+                    color: #2196F3;
+                    font-size: 1.2rem;
+                    font-weight: 500;
+                    margin: 1rem 0;
+                    padding: 0.5rem 0;
+                }
+                
+                /* Labels */
+                .stTextInput > label, .stNumberInput > label {
+                    font-size: 1.1rem !important;
+                    font-weight: 500 !important;
+                    color: #1976D2 !important;
+                }
+                
+                /* Student table styling */
+                .student-table {
+                    height: 400px;
+                    overflow-y: scroll;
+                    padding: 1rem;
+                    border: 1px solid #BBDEFB;
+                    border-radius: 8px;
+                    margin-bottom: 1rem;
+                    background: #FFFFFF;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                
+                .student-row {
+                    padding: 8px;
+                    border-radius: 4px;
+                    margin: 4px 0;
+                }
+                
+                .student-row:focus-within {
+                    background-color: #E3F2FD;
+                }
+                
+                /* Team summary styling */
+                .team-summary {
+                    background: #E3F2FD;
+                    padding: 1rem;
+                    border-radius: 8px;
+                    margin-top: 1rem;
+                }
+                
+                .team-count {
+                    font-size: 1.1rem;
+                    color: #1976D2;
+                }
+                
+                /* Column headers */
+                .column-header {
+                    font-size: 1.1rem;
+                    font-weight: 500;
+                    color: #1976D2;
+                    padding: 0.5rem 0;
+                    border-bottom: 2px solid #BBDEFB;
+                    margin-bottom: 0.5rem;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+        
         # Initialize session state for logout
         if 'logout_clicked' not in st.session_state:
             st.session_state.logout_clicked = False
@@ -20,7 +96,7 @@ class StreamlitUI:
         
         col1, col2 = st.columns([6, 1])
         with col1:
-            st.title("IntedashBoard File Exporter")
+            st.markdown('<h1 class="main-title">IntedashBoard File Exporter</h1>', unsafe_allow_html=True)
         with col2:
             if st.button("Logout", type="primary", on_click=lambda: setattr(st.session_state, 'logout_clicked', True)):
                 st.markdown('<script>closeTab();</script>', unsafe_allow_html=True)
@@ -30,26 +106,28 @@ class StreamlitUI:
             st.markdown('<script>closeTab();</script>', unsafe_allow_html=True)
             st.stop()
             
-        st.write("This app processes Excel files containing student information.")
+        st.markdown('<p class="section-header">Process and manage student information efficiently</p>', unsafe_allow_html=True)
 
     @staticmethod
     def render_input_fields() -> Tuple[Optional[str], str, int]:
         """Renders input fields for section, filename, and number of teams."""
+        st.markdown('<div class="section-header">Configuration</div>', unsafe_allow_html=True)
+        
         col1, col2, col3 = st.columns(3)
         with col1:
-            section = st.text_input("Enter the section:", "")
+            section = st.text_input("📚 Section", "")
             # Validate section input
             if not section or section.strip() == "":
                 st.error("Section cannot be empty. Please enter a valid section.")
                 section = None
         with col2:
             output_filename = st.text_input(
-                "Enter output filename:", 
+                "📄 Output Filename", 
                 CONFIG['DEFAULT_FILENAME']
             )
         with col3:
             num_teams = st.number_input(
-                "Number of Teams:",
+                "👥 Number of Teams",
                 min_value=1,
                 value=1,
                 step=1
@@ -63,15 +141,14 @@ class StreamlitUI:
     @staticmethod
     def display_team_summary(team_assignments: Dict[int, int], num_teams: int):
         """Displays a summary of how many students are in each team."""
+        st.markdown('<div class="team-summary">', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-header">📊 Team Summary</h3>', unsafe_allow_html=True)
+        
         # Count students in each team
         team_counts = {i: 0 for i in range(1, num_teams + 1)}
         for team_num in team_assignments.values():
             if team_num in team_counts:
                 team_counts[team_num] += 1
-        
-        # Display summary in a neat format
-        st.write("---")
-        st.write("**Team Summary:**")
         
         # Create rows of 4 teams each for better layout
         teams_per_row = 4
@@ -81,7 +158,11 @@ class StreamlitUI:
                 team_num = i + j + 1
                 if team_num <= num_teams:
                     with cols[j]:
-                        st.markdown(f"Team {team_num}: **{team_counts[team_num]}** students")
+                        st.markdown(
+                            f'<div class="team-count">Team {team_num}: <strong>{team_counts[team_num]}</strong> students</div>', 
+                            unsafe_allow_html=True
+                        )
+        st.markdown('</div>', unsafe_allow_html=True)
 
     @staticmethod
     def render_student_selection(df: pd.DataFrame, num_teams: int) -> Dict[int, int]:
@@ -89,26 +170,40 @@ class StreamlitUI:
         Renders the student selection interface with team assignment in a table format.
         Returns a dictionary mapping row indices to team numbers.
         """
-        st.write("Assign teams to students:")
+        st.markdown('<h3 class="section-header">👨‍🎓 Assign Teams to Students</h3>', unsafe_allow_html=True)
         
         # Initialize session state for team assignments if not exists
         if 'team_assignments' not in st.session_state:
             st.session_state.team_assignments = {}
 
+        # Add CSS to fix spacing
+        st.markdown("""
+            <style>
+                div[data-testid="stHorizontalBlock"] {
+                    margin-bottom: 0 !important;
+                    padding-bottom: 0 !important;
+                }
+                div.student-table {
+                    margin-top: 0 !important;
+                    padding-top: 0.5rem !important;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+
         # Create column headers
         col1, col2 = st.columns([4, 1])
         with col1:
-            st.markdown("**Student Name**")
+            st.markdown('<div class="column-header">Student Name</div>', unsafe_allow_html=True)
         with col2:
-            st.markdown(f"**Team (1-{num_teams})**")
+            st.markdown(f'<div class="column-header">Team (1-{num_teams})</div>', unsafe_allow_html=True)
         
-        # Display each student with their current information and team input
+        # Display student list immediately after headers
         team_assignments = {}
         for idx, row in df.iterrows():
             col1, col2 = st.columns([4, 1])
             with col1:
                 student_info = f"{row['Last Name']}, {row['First Name']} ({row['Student ID']})"
-                st.text(student_info)
+                st.markdown(f'<div style="padding: 8px 0;">{student_info}</div>', unsafe_allow_html=True)
             with col2:
                 # Get the current team number from session state or default to 0
                 current_team = st.session_state.team_assignments.get(idx, 0)

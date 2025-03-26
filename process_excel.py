@@ -30,6 +30,12 @@ def main():
                         st.error("Please enter a valid section before processing the file.")
                         return
                     
+                    # Check for unassigned students
+                    total_students = len(initial_df)
+                    assigned_students = len(team_assignments)
+                    if assigned_students < total_students:
+                        st.warning(f"⚠️ {total_students - assigned_students} students have not been assigned to any team. You can still proceed if this is intended.")
+                    
                     # Validate all team assignments are within range
                     invalid_teams = [team for team in team_assignments.values() 
                                    if team < 1 or team > num_teams]
