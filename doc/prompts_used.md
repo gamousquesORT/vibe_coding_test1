@@ -36,3 +36,6 @@ An error occurred: NDFrame.to_excel() missing 1 required positional argument: 'e
 put classes code in separate files
 
 [process_excel.py]():162-185
+
+
+do not disply rhe label Tem fo >student> on each row. make the input more like a table. student and team input filed on the same rown

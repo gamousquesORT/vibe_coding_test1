@@ -56,34 +56,50 @@ class StreamlitUI:
     @staticmethod
     def render_student_selection(df: pd.DataFrame) -> Dict[int, int]:
         """
-        Renders the student selection interface with team assignment.
+        Renders the student selection interface with team assignment in a table format.
         Returns a dictionary mapping row indices to team numbers.
         """
-        st.write("Select students and assign teams:")
+        st.write("Assign teams to students:")
         
         # Initialize session state for team assignments if not exists
         if 'team_assignments' not in st.session_state:
             st.session_state.team_assignments = {}
 
-        # Create a DataFrame for display with selection checkboxes
-        team_assignments = {}
+        # Create column headers
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            st.markdown("**Student Name**")
+        with col2:
+            st.markdown("**Team**")
         
         # Display each student with their current information and team input
+        team_assignments = {}
         for idx, row in df.iterrows():
-            col1, col2, col3 = st.columns([3, 1, 1])
+            col1, col2 = st.columns([4, 1])
             with col1:
                 student_info = f"{row['Last Name']}, {row['First Name']} ({row['Student ID']})"
                 st.text(student_info)
             with col2:
                 # Get the current team number from session state or default to 0
                 current_team = st.session_state.team_assignments.get(idx, 0)
-                team_num = st.number_input(
-                    f"Team for {row['Last Name']}",
-                    min_value=0,
-                    value=current_team,
-                    step=1,
-                    key=f"team_{idx}"
+                
+                # Create a text input that only accepts numbers
+                team_str = st.text_input(
+                    "",  # Empty label
+                    value=str(current_team),
+                    key=f"team_{idx}",
+                    label_visibility="collapsed",  # Hides the label completely
+                    max_chars=3  # Limit to 3 digits
                 )
+                
+                # Convert input to number and validate
+                try:
+                    team_num = int(team_str) if team_str.strip() else 0
+                    if team_num < 0:
+                        team_num = 0
+                except ValueError:
+                    team_num = 0
+                    
                 if team_num > 0:
                     team_assignments[idx] = team_num
                     st.session_state.team_assignments[idx] = team_num
