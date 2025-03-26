@@ -8,8 +8,7 @@ Team
 Remarks
 
 The input file has on the Nombre column a string with the following format Last Name, First Name (Student ID)
-Split the Nombre Cell srting into the corresponding columns of the output file, use the names
-
+Split the Nombre Cell string into the corresponding columns of the output file, use the names
 Leave blank the following columns
 Email
 Section
