@@ -171,5 +171,5 @@ products_vectorstore/
 # Ignore any pickle files make during the course
 *.pkl
 
-# ignore venv
-tech2ai/
+#ingoer the data folder
+data/
