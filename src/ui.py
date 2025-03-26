@@ -1,5 +1,5 @@
 """Handles the Streamlit user interface components."""
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Dict
 from io import BytesIO
 import streamlit as st
 import pandas as pd
@@ -52,6 +52,45 @@ class StreamlitUI:
             output_filename += '.xlsx'
             
         return section, output_filename
+
+    @staticmethod
+    def render_student_selection(df: pd.DataFrame) -> Dict[int, int]:
+        """
+        Renders the student selection interface with team assignment.
+        Returns a dictionary mapping row indices to team numbers.
+        """
+        st.write("Select students and assign teams:")
+        
+        # Initialize session state for team assignments if not exists
+        if 'team_assignments' not in st.session_state:
+            st.session_state.team_assignments = {}
+
+        # Create a DataFrame for display with selection checkboxes
+        team_assignments = {}
+        
+        # Display each student with their current information and team input
+        for idx, row in df.iterrows():
+            col1, col2, col3 = st.columns([3, 1, 1])
+            with col1:
+                student_info = f"{row['Last Name']}, {row['First Name']} ({row['Student ID']})"
+                st.text(student_info)
+            with col2:
+                # Get the current team number from session state or default to 0
+                current_team = st.session_state.team_assignments.get(idx, 0)
+                team_num = st.number_input(
+                    f"Team for {row['Last Name']}",
+                    min_value=0,
+                    value=current_team,
+                    step=1,
+                    key=f"team_{idx}"
+                )
+                if team_num > 0:
+                    team_assignments[idx] = team_num
+                    st.session_state.team_assignments[idx] = team_num
+                elif idx in st.session_state.team_assignments:
+                    del st.session_state.team_assignments[idx]
+            
+        return team_assignments
 
     @staticmethod
     def create_excel_download(df: pd.DataFrame, filename: str):

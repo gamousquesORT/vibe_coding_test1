@@ -1,5 +1,5 @@
 """Handles Excel file processing functionality."""
-from typing import Optional
+from typing import Optional, Dict
 import pandas as pd
 from .models import StudentData
 from .config import CONFIG
@@ -38,22 +38,24 @@ class ExcelProcessor:
             return StudentData('', '', '')
 
     @staticmethod
-    def process_dataframe(df: pd.DataFrame, section: str) -> Optional[pd.DataFrame]:
+    def process_dataframe(df: pd.DataFrame, section: str, team_assignments: Dict[int, int]) -> Optional[pd.DataFrame]:
         """Processes the input DataFrame and returns a new DataFrame with required columns."""
         if 'Nombre' not in df.columns:
             raise ValueError("'Nombre' column not found in the input file")
 
         # Process each row and create new columns
         processed_data = []
-        for nombre in df['Nombre']:
+        for idx, nombre in enumerate(df['Nombre']):
             student = ExcelProcessor.process_nombre(str(nombre))
+            # Get team number for this student from assignments, or empty string if not assigned
+            team_number = team_assignments.get(idx, 0)
             processed_data.append({
                 'First Name': student.first_name,
                 'Last Name': student.last_name,
                 'Email': '',
                 'Student ID': student.student_id,
                 'Section': section,
-                'Team': '',
+                'Team': str(team_number) if team_number > 0 else '',
                 'Remarks': ''
             })
         
