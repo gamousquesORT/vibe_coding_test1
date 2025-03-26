@@ -1,4 +1,4 @@
-This is a vibe coding experiment. It involves using an AI agent to develop and give it instructions on what we want it to build, allowing the agent to code, access the terminal, execute corrective actions, among other things in order to build the app.
+This is a vibe coding experiment. It involves using an AI agent to develop and give it instructions on what we want it to build, allowing the agent to code, access the terminal, execute corrective actions, among other things in order to build the app. In this proyect I used VSC extension [Github copilot Agent Mode](https://code.visualstudio.com/blogs/2025/02/24/introducing-copilot-agent-mode)
 
 This example takes an Excel spreadsheet and, based on the values in one cell, generates the values for other cells, allowing the user to enrich the data using a web interface, to ultimately generate a new Excel file with the updated information.
 
