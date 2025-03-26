@@ -49,8 +49,7 @@ before the user selects to process file check that all students have a team assi
 --
 
 
-there is a empty squared draw undher the labes studnt name and Team and befor the student list. remove it
-
+there is a empty squared draw under the labels student name and Team and before the student list. remove it
 Pasted Image
 
 [config.py]():1-24
