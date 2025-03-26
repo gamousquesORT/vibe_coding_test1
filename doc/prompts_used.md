@@ -1,4 +1,4 @@
-write a python script to read the names on the Nombre colum of an input excel file and write a new excel file with the following columns:
+write a python script to read the names on the Nombre column of an input excel file and write a new excel file with the following columns:
 First Name
 Last Name
 Email
